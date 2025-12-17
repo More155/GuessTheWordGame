@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess The Word Game</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Guess The Word</h1>
+        <div id="scrambled"></div>
+        
+        <div class="inputs" id="inputs"></div>
+        
+        <div class="stats">
+            <div>Tries: <span id="tries">0</span>/6</div>
+            <div>Mistakes: <span id="mistakes-count">0</span>/6</div>
+        </div>
+        
+        <div class="mistakes-list" id="mistakes-list"></div>
+        
+        <div class="buttons">
+            <button id="randomButton">Random</button>
+            <button id="resetButton">Reset</button>
+            <button id="hintButton">Pista</button>
+        <div class="buttons">
+</div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
