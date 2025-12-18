@@ -1,9 +1,13 @@
-let availableWords = ["manzana", "guitarra", "flor", "lapicera", "arcoiris", "bosque", "puzzle", "mariposa", "elefante", "vainilla"];
+const originalWords = ["Apple", "Guitar", "Flower", "Pen", "Rainbow", "Forest", "Puzzle", "Butterfly", "Elephant", "Vanilla"];
 
-let currentWord = "";
+let availableWords = [...originalWords];  
+
+let currentWord = "";         
+let currentOriginal = "";    
 let tries = 0;
 let mistakes = [];
 const maxErrors = 6;
+
 
 const scrambledEl = document.getElementById("scrambled");
 const inputsContainer = document.getElementById("inputs");
@@ -35,43 +39,34 @@ function createInputFields(length) {
 
 function handleInput(e) {
     const input = e.target;
-    
-   
     input.value = input.value.toLowerCase();
-    
+
     if (input.value) {
         const nextInput = input.nextElementSibling;
         if (nextInput) nextInput.focus();
     }
-    
     checkCompletion();
 }
 
 function handleBackspace(e) {
     if (e.key === "Backspace" && !e.target.value) {
-        const index = parseInt(e.target.dataset.index);
-        const prev = inputsContainer.querySelector(`input[data-index="${index - 1}"]`);
+        const prev = e.target.previousElementSibling;
         if (prev) prev.focus();
     }
 }
 
 function giveHint() {
     const inputs = inputsContainer.querySelectorAll("input");
-    
     for (let i = 0; i < currentWord.length; i++) {
-        const input = inputs[i];
-        const currentLetter = input.value.toLowerCase();
-        
-        if (currentLetter !== currentWord[i]) {
-            input.value = currentWord[i];
-            tries++; 
+        if (inputs[i].value.toLowerCase() !== currentWord[i]) {
+            inputs[i].value = currentWord[i];
+            tries++;
             triesEl.textContent = tries;
             checkCompletion();
             return;
         }
     }
-    
-    Swal.fire("Ya casi lo tienes!", "Todas las letras visibles están bien.", "info");
+    Swal.fire("Almost there!", "All visible letters are correct.", "info");
 }
 
 async function checkCompletion() {
@@ -98,26 +93,28 @@ async function checkCompletion() {
     if (correctCount === currentWord.length) {
         inputs.forEach(inp => inp.disabled = true);
 
-        const index = availableWords.indexOf(currentWord);
-        if (index > -1) availableWords.splice(index, 1);
+        const index = availableWords.indexOf(currentOriginal);
+        if (index > -1) {
+            availableWords.splice(index, 1);
+        }
 
         await Swal.fire({
-            title: "Genial! 🎉",
-            text: `Adivinaste "${currentWord.toUpperCase()}"!\nQuedan ${availableWords.length} palabras.`,
+            title: "Awesome! 🎉",
+            text: `You guessed "${currentOriginal}"!\n${availableWords.length} words left.`,
             icon: "success",
-            confirmButtonText: availableWords.length > 0 ? "Siguiente" : "Ver final"
+            confirmButtonText: availableWords.length > 0 ? "Next" : "Start Over"
         });
 
         if (availableWords.length > 0) {
             generateNewWord();
         } else {
             await Swal.fire({
-                title: "FELICIDADES!",
-                html: "<p>Completaste todas las palabras!</p>",
+                title: "Congratulations! 🏆",
+                html: "<p>You completed all the words!</p>",
                 icon: "success",
-                confirmButtonText: "Jugar de nuevo"
+                confirmButtonText: "Play Again"
             });
-            availableWords = ["manzana", "guitarra", "flor", "lapicera", "arcoiris", "bosque", "puzzle", "mariposa", "elefante", "vainilla"];
+            availableWords = [...originalWords];
             generateNewWord();
         }
         return;
@@ -132,9 +129,9 @@ async function checkCompletion() {
         inputs.forEach(inp => inp.disabled = true);
         await Swal.fire({
             title: "😞",
-            text: `La palabra era: ${currentWord.toUpperCase()}`,
+            text: `The word was: ${currentOriginal}`,
             icon: "error",
-            confirmButtonText: "Siguiente"
+            confirmButtonText: "Next"
         });
         generateNewWord();
     }
@@ -142,12 +139,13 @@ async function checkCompletion() {
 
 function generateNewWord() {
     if (availableWords.length === 0) {
-        availableWords = ["manzana", "guitarra", "flor", "lapicera", "arcoiris", "bosque", "puzzle", "mariposa", "elefante", "vainilla"];
+        availableWords = [...originalWords];
     }
 
-    currentWord = availableWords[Math.floor(Math.random() * availableWords.length)].toLowerCase();
-    scrambled = scrambleWord(currentWord);
-    scrambledEl.textContent = scrambled.toUpperCase();
+    currentOriginal = availableWords[Math.floor(Math.random() * availableWords.length)];
+    currentWord = currentOriginal.toLowerCase();  
+
+    scrambledEl.textContent = scrambleWord(currentWord).toUpperCase();
     createInputFields(currentWord.length);
 
     tries = 0;
@@ -164,7 +162,7 @@ function generateNewWord() {
 }
 
 function resetGame() {
-    availableWords = ["manzana", "guitarra", "flor", "lapicera", "arcoiris", "bosque", "puzzle", "mariposa", "elefante", "vainilla"];
+    availableWords = [...originalWords];
     generateNewWord();
 }
 
